@@ -11,16 +11,17 @@ if (require('electron-squirrel-startup')) {
 }
 
 const createWindow = (): void => {
+  const circle = process.argv[process.argv.length - 1] === 'circle'
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     height: 240,
-    width: 240,
+    width: circle ? 240 : 340,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
     frame: false,
     transparent: true,
-    skipTaskbar: true
+    skipTaskbar: true,
   });
 
   // and load the index.html of the app.
@@ -29,6 +30,12 @@ const createWindow = (): void => {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
   mainWindow.setAlwaysOnTop(true)
+
+  if (circle) {
+    mainWindow.webContents.on('did-finish-load', () => {
+      mainWindow.webContents.executeJavaScript('setCircle()')
+    })
+  }
 };
 
 // This method will be called when Electron has finished

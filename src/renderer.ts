@@ -28,6 +28,11 @@
 
 import './index.css';
 
+window.setCircle = () => {
+  const outer = document.getElementById('outer')
+  outer.classList.remove('rectangle')
+}
+
 (async () => {
   const devices = await navigator.mediaDevices.enumerateDevices()
 
