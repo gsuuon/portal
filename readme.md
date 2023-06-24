@@ -19,6 +19,7 @@ Example: `npm start -- -- -c broadcast`
 `s` — shape toggle  
 `b` — blur toggle  
 `d` — device select  
+`h` — hide video  
 
 ## Install
 `npm run make` and then run the appropriate installer

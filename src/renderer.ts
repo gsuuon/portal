@@ -83,6 +83,15 @@ window.setup = async () => {
     }
   })()
 
+  const toggleHide = (() => {
+    let hidden = false
+
+    return () => {
+      cam.style.opacity = hidden ? '1' : '0'
+      hidden = !hidden
+    }
+  })()
+
   const showSelectDevice = () => {
     const select = document.createElement('select')
 
@@ -137,6 +146,9 @@ window.setup = async () => {
         break
       case 't': // transparent
         toggleTransparency()
+        break
+      case 'h': // hide
+        toggleHide()
         break
     }
   })
