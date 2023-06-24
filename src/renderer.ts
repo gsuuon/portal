@@ -1,41 +1,61 @@
 import './index.css';
 
-(async () => {
-  const setDevice = deviceId => {
-    const cam = document.getElementById('camera') as HTMLVideoElement
-
-    navigator.mediaDevices.getUserMedia({
-      video: {
-        deviceId
-      }
-    }).then(function(stream) {
-        cam.srcObject = stream;
-      }).catch(function() {
-        alert('could not connect stream');
-      });
-
-    const toggleBlur = (() => {
-      let blurred = false
-
-      return () => {
-        if (!blurred) {
-          const filters = window.getComputedStyle(cam).filter
-          cam.style.filter = filters + ' blur(22px)'
-        } else {
-          cam.style.filter = ''
-        }
-        blurred = !blurred
-      }
-    })()
-
-    window.addEventListener('keydown', ev => {
-      switch (ev.key) {
-        case 'b':
-          toggleBlur()
-          break
-      }
-    })
+declare global {
+  interface Window {
+    portalOptions: {
+      circle?: boolean;
+      videoDeviceName?: string;
+    };
+    setup: Function
   }
+}
+
+window.setup = async () => {
+  const cam = document.getElementById('camera') as HTMLVideoElement
+  const outer = document.getElementById('outer')
+  let stream : MediaStream | undefined;
+
+  if (window.portalOptions?.circle) {
+    outer.classList.remove('rectangle')
+  }
+
+  const clearDevice = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => {
+        if (track.readyState == 'live') {
+          track.stop()
+        }
+      })
+    }
+  }
+
+  const setDevice = async (deviceId: string) => {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          deviceId
+        }
+      })
+
+      cam.srcObject = stream
+    } catch {
+      alert('could not connect stream');
+    };
+  }
+
+  const toggleBlur = (() => {
+    let blurred = false
+
+    return () => {
+      if (!blurred) {
+        const filters = window.getComputedStyle(cam).filter
+        cam.style.filter = filters + ' blur(22px)'
+      } else {
+        cam.style.filter = ''
+      }
+      blurred = !blurred
+    }
+  })()
 
   const showSelectDevice = () => {
     const select = document.createElement('select')
@@ -58,16 +78,16 @@ import './index.css';
 
       if (deviceId === '') { return }
       setDevice(deviceId)
-      document.body.removeChild(select)
+      select.remove()
     }
   }
 
   const devices = await navigator.mediaDevices.enumerateDevices()
 
   const videoSources = devices.filter(d => d.kind === 'videoinput')
-  if (window.videoDeviceName != undefined) {
+  if (window.portalOptions?.videoDeviceName) {
     const device = videoSources.find(d => {
-      return d.label.toLowerCase().match(window.videoDeviceName) != null
+      return d.label.toLowerCase().match(window.portalOptions.videoDeviceName) != null
     })
 
     if (device) {
@@ -77,9 +97,18 @@ import './index.css';
     showSelectDevice()
   }
 
-})()
-
-window.setCircle = () => {
-  const outer = document.getElementById('outer')
-  outer.classList.remove('rectangle')
+  window.addEventListener('keydown', ev => {
+    switch (ev.key) {
+      case 'b': // blur
+        toggleBlur()
+        break
+      case 'd': // device
+        clearDevice()
+        showSelectDevice()
+        break
+      case 's': // shape
+        outer.classList.toggle('rectangle')
+        break
+    }
+  })
 }

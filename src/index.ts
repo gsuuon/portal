@@ -53,17 +53,12 @@ const createWindow = (): void => {
   // mainWindow.webContents.openDevTools();
   mainWindow.setAlwaysOnTop(true)
 
-  if (options.circle) {
-    mainWindow.webContents.on('did-finish-load', () => {
-      mainWindow.webContents.executeJavaScript('setCircle()')
-    })
-  }
+  mainWindow.webContents.on('did-finish-load', () => {
+    const setOptions = 'window.portalOptions = JSON.parse(`' + JSON.stringify(options) + '`)'
 
-  if (options.videoDeviceName) {
-    mainWindow.webContents.on('did-finish-load', () => {
-      mainWindow.webContents.executeJavaScript('window.videoDeviceName = "' + options.videoDeviceName + '"')
-    })
-  }
+    mainWindow.webContents.executeJavaScript(setOptions)
+    mainWindow.webContents.executeJavaScript('setup()')
+  })
 };
 
 // This method will be called when Electron has finished
