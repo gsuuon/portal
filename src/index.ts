@@ -16,6 +16,10 @@ const parseArg = (arg: string) => {
       return {
         circle: true
       }
+    case '-t':
+      return {
+        transparent: true
+      }
     default:
       return {
         videoDeviceName: arg

@@ -53,7 +53,7 @@ video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: url(#transparentBlack) saturate(1.5);
+  filter: saturate(1.5);
 }
 
 div#sheen {

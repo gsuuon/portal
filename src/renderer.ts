@@ -3,8 +3,9 @@ import './index.css';
 declare global {
   interface Window {
     portalOptions: {
-      circle?: boolean;
-      videoDeviceName?: string;
+      circle?: boolean
+      videoDeviceName?: string
+      transparent?: boolean
     };
     setup: Function
   }
@@ -17,6 +18,10 @@ window.setup = async () => {
 
   if (window.portalOptions?.circle) {
     outer.classList.remove('rectangle')
+  }
+
+  if (window.portalOptions?.transparent) {
+      cam.style.filter = window.getComputedStyle(cam).filter + ' url(#transparentBlack'
   }
 
   const clearDevice = () => {
