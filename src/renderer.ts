@@ -38,8 +38,12 @@ window.setup = async () => {
     return () => {
       if (transparent) {
         removeFilterTransparent()
+        document.getElementById('outer').style.background = ''
+        document.getElementById('sheen').style.opacity = ''
       } else {
         addFilterTransparent()
+        document.getElementById('outer').style.background = 'linear-gradient(354deg, #00000099, transparent)'
+        document.getElementById('sheen').style.opacity = '0.2'
       }
       transparent = !transparent
     }
