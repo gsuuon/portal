@@ -1,4 +1,3 @@
-import { contextBridge } from 'electron';
 import './index.css';
 
 (async () => {
@@ -66,12 +65,18 @@ import './index.css';
   const devices = await navigator.mediaDevices.enumerateDevices()
 
   const videoSources = devices.filter(d => d.kind === 'videoinput')
+  if (window.videoDeviceName != undefined) {
+    const device = videoSources.find(d => {
+      return d.label.toLowerCase().match(window.videoDeviceName) != null
+    })
 
-  console.log({videoSources})
+    if (device) {
+      setDevice(device.deviceId)
+    }
+  } else {
+    showSelectDevice()
+  }
 
-  setDevice(videoSources[1].deviceId)
-
-  // showSelectDevice()
 })()
 
 window.setCircle = () => {

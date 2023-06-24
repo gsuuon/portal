@@ -10,12 +10,34 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
+const parseArg = (arg: string) => {
+  switch (arg) {
+    case '-c':
+      return {
+        circle: true
+      }
+    default:
+      return {
+        videoDeviceName: arg
+      }
+  }
+}
+
 const createWindow = (): void => {
-  const circle = process.argv[process.argv.length - 1] === 'circle'
+  const options: {
+    videoDeviceName?: string,
+    circle?: boolean
+  }= process.argv.slice(2).reduce((opts, arg) => {
+    const parsed = parseArg(arg)
+    return Object.assign(opts, parsed)
+  }, {})
+
+  console.log({options})
+
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     height: 240,
-    width: circle ? 240 : 340,
+    width: options.circle ? 240 : 340,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
@@ -31,9 +53,15 @@ const createWindow = (): void => {
   // mainWindow.webContents.openDevTools();
   mainWindow.setAlwaysOnTop(true)
 
-  if (circle) {
+  if (options.circle) {
     mainWindow.webContents.on('did-finish-load', () => {
       mainWindow.webContents.executeJavaScript('setCircle()')
+    })
+  }
+
+  if (options.videoDeviceName) {
+    mainWindow.webContents.on('did-finish-load', () => {
+      mainWindow.webContents.executeJavaScript('window.videoDeviceName = "' + options.videoDeviceName + '"')
     })
   }
 };
