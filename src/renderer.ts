@@ -20,9 +20,30 @@ window.setup = async () => {
     outer.classList.remove('rectangle')
   }
 
-  if (window.portalOptions?.transparent) {
-      cam.style.filter = window.getComputedStyle(cam).filter + ' url(#transparentBlack'
+  const addFilterTransparent = () => {
+      cam.style.filter = window.getComputedStyle(cam).filter + ' url(#transparentBlack)'
   }
+
+  const removeFilterTransparent = () => {
+      cam.style.filter = window.getComputedStyle(cam).filter.replace('url("#transparentBlack")', '')
+  }
+
+  if (window.portalOptions?.transparent) {
+    addFilterTransparent()
+  }
+
+  const toggleTransparency = (() => {
+    let transparent = !!window.portalOptions?.transparent
+
+    return () => {
+      if (transparent) {
+        removeFilterTransparent()
+      } else {
+        addFilterTransparent()
+      }
+      transparent = !transparent
+    }
+  })()
 
   const clearDevice = () => {
     if (stream) {
@@ -113,6 +134,9 @@ window.setup = async () => {
         break
       case 's': // shape
         outer.classList.toggle('rectangle')
+        break
+      case 't': // transparent
+        toggleTransparency()
         break
     }
   })
