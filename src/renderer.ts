@@ -121,6 +121,29 @@ window.setup = async () => {
     }
   }
 
+  const zoom = (() => {
+    let level = 1
+
+    const start = window.getComputedStyle(cam).transform
+
+    const setZoom = (level_: number) => {
+      level = level_
+      cam.style.transform = start + ' scale(' + level + ')'
+    }
+
+    return {
+      in: () => {
+        setZoom(level + .25)
+      },
+      out: () => {
+        setZoom(level - .25)
+      },
+      reset: () => {
+        setZoom(1)
+      }
+    }
+  })()
+
   const devices = await navigator.mediaDevices.enumerateDevices()
 
   const videoSources = devices.filter(d => d.kind === 'videoinput')
@@ -153,6 +176,15 @@ window.setup = async () => {
         break
       case 'h': // hide
         toggleHide()
+        break
+      case 'ArrowUp':
+        zoom.in()
+        break
+      case 'ArrowDown':
+        zoom.out()
+        break
+      case 'ArrowLeft':
+        zoom.reset()
         break
     }
   })
