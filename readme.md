@@ -20,6 +20,9 @@ Example: `npm start -- -- -c broadcast`
 `b` — blur toggle  
 `d` — device select  
 `h` — hide video  
+`↑` — zoom in  
+`↓` — zoom out  
+`←` — zoom reset  
 
 ## Install
 `npm run make` and then run the appropriate installer
