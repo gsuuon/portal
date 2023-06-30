@@ -20,16 +20,24 @@ window.setup = async () => {
     outer.classList.remove('rectangle')
   }
 
-  const addFilterTransparent = () => {
-      cam.style.filter = window.getComputedStyle(cam).filter + ' url(#transparentBlack)'
+  const getCamFilter = () => {
+    const style = window.getComputedStyle(cam).filter
+    if (style === 'none') {
+      return ''
+    }
+    return style
   }
 
-  const removeFilterTransparent = () => {
-      cam.style.filter = window.getComputedStyle(cam).filter.replace('url("#transparentBlack")', '')
-  }
+  const addCamFilter = (filter: string) =>
+    cam.style.filter = getCamFilter() + ' ' + filter
+
+  const removeCamFilter = (filter: string) =>
+    cam.style.filter = getCamFilter().replace(filter, '')
+
+  const filter_transparent = 'url("#transparentBlack")'
 
   if (window.portalOptions?.transparent) {
-    addFilterTransparent()
+    addCamFilter(filter_transparent)
   }
 
   const toggleTransparency = (() => {
@@ -37,11 +45,11 @@ window.setup = async () => {
 
     return () => {
       if (transparent) {
-        removeFilterTransparent()
+        removeCamFilter(filter_transparent)
         document.getElementById('outer').style.background = ''
         document.getElementById('sheen').style.opacity = ''
       } else {
-        addFilterTransparent()
+        addCamFilter(filter_transparent)
         document.getElementById('outer').style.background = 'linear-gradient(354deg, #00000099, transparent)'
         document.getElementById('sheen').style.opacity = '0.2'
       }
@@ -74,16 +82,27 @@ window.setup = async () => {
   }
 
   const toggleBlur = (() => {
+    const blur_filter = 'blur(22px)'
     let blurred = false
 
     return () => {
       if (!blurred) {
-        const filters = window.getComputedStyle(cam).filter
-        cam.style.filter = filters + ' blur(22px)'
+        addCamFilter(blur_filter)
       } else {
-        cam.style.filter = ''
+        removeCamFilter(blur_filter)
       }
+
       blurred = !blurred
+    }
+  })()
+
+  const cycleSaturate = (() => {
+    const levels = [1, 1.25, 1.5]
+    let level = 0
+    return () => {
+      removeCamFilter(`saturate(${levels[level]})`)
+      level = level === levels.length - 1 ? 0 : level + 1
+      addCamFilter(`saturate(${levels[level]})`)
     }
   })()
 
@@ -176,6 +195,9 @@ window.setup = async () => {
         break
       case 'h': // hide
         toggleHide()
+        break
+      case 'c': // cycle saturate
+        cycleSaturate()
         break
       case 'ArrowUp':
         zoom.in()
