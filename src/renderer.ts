@@ -193,6 +193,9 @@ window.setup = async () => {
       case 's': // shape
         outer.classList.toggle('rectangle')
         break
+      case 'r': // rotate border
+        document.getElementById('gradient-bg').classList.toggle('animated')
+        break
       case 't': // transparent
         toggleTransparency()
         break
