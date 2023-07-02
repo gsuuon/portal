@@ -11,6 +11,23 @@ declare global {
   }
 }
 
+const toggle = ({ start, on, off }: {
+  start: boolean;
+  on: Function;
+  off: Function;
+}) => {
+  let is_on = start
+
+  return () => {
+    if (is_on) {
+      off()
+    } else {
+      on()
+    }
+    is_on = !is_on
+  }
+}
+
 window.setup = async () => {
   const cam = document.getElementById('camera') as HTMLVideoElement
   const outer = document.getElementById('outer')
@@ -40,23 +57,6 @@ window.setup = async () => {
     addCamFilter(filter_transparent)
   }
 
-  const toggleTransparency = (() => {
-    let transparent = !!window.portalOptions?.transparent
-
-    return () => {
-      if (transparent) {
-        removeCamFilter(filter_transparent)
-        document.getElementById('outer').style.background = ''
-        document.getElementById('sheen').style.opacity = ''
-      } else {
-        addCamFilter(filter_transparent)
-        document.getElementById('outer').style.background = 'linear-gradient(354deg, #00000099, transparent)'
-        document.getElementById('sheen').style.opacity = '0.2'
-      }
-      transparent = !transparent
-    }
-  })()
-
   const clearDevice = () => {
     if (stream) {
       stream.getTracks().forEach(track => {
@@ -81,20 +81,32 @@ window.setup = async () => {
     };
   }
 
-  const toggleBlur = (() => {
-    const blur_filter = 'blur(22px)'
-    let blurred = false
-
-    return () => {
-      if (!blurred) {
-        addCamFilter(blur_filter)
-      } else {
-        removeCamFilter(blur_filter)
-      }
-
-      blurred = !blurred
+  const toggleTransparency = toggle({
+    start: !!window.portalOptions?.transparent,
+    on: () => {
+      addCamFilter(filter_transparent)
+      document.getElementById('outer').style.background = 'linear-gradient(354deg, #00000099, transparent)'
+      document.getElementById('sheen').style.opacity = '0.2'
+    },
+    off: () => {
+      removeCamFilter(filter_transparent)
+      document.getElementById('outer').style.background = ''
+      document.getElementById('sheen').style.opacity = ''
     }
-  })()
+  })
+
+  const blur_filter = 'blur(22px)'
+  const toggleBlur = toggle({
+    start: false,
+    on: () => addCamFilter(blur_filter),
+    off: () => removeCamFilter(blur_filter)
+  })
+
+  const toggleHide = toggle({
+    start: false,
+    off: () => cam.style.opacity = '1',
+    on: () => cam.style.opacity = '0'
+  })
 
   const cycleSaturate = (() => {
     const levels = [1, 1.25, 1.5]
@@ -103,15 +115,6 @@ window.setup = async () => {
       removeCamFilter(`saturate(${levels[level]})`)
       level = level === levels.length - 1 ? 0 : level + 1
       addCamFilter(`saturate(${levels[level]})`)
-    }
-  })()
-
-  const toggleHide = (() => {
-    let hidden = false
-
-    return () => {
-      cam.style.opacity = hidden ? '1' : '0'
-      hidden = !hidden
     }
   })()
 
