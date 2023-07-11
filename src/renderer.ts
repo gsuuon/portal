@@ -29,9 +29,16 @@ const toggle = ({ start, on, off }: {
   }
 }
 
+const elements = {
+  cam: document.getElementById('camera') as HTMLVideoElement,
+  outer: document.getElementById('outer'),
+  bgGradient: document.getElementById('gradient-bg'),
+  sheen: document.getElementById('sheen'),
+  select: document.getElementById('select-device')
+}
+
 window.addEventListener('resize', _ => {
-  const bg = document.getElementById('gradient-bg')
-  bg.style.setProperty(
+  elements.bgGradient.style.setProperty(
     '--size',
     Math.hypot(
       window.innerWidth,
@@ -41,16 +48,14 @@ window.addEventListener('resize', _ => {
 })
 
 window.setup = async () => {
-  const cam = document.getElementById('camera') as HTMLVideoElement
-  const outer = document.getElementById('outer')
   let stream : MediaStream | undefined;
 
   if (window.portalOptions?.circle) {
-    outer.classList.remove('rectangle')
+    elements.outer.classList.remove('rectangle')
   }
 
   const getCamFilter = () => {
-    const style = window.getComputedStyle(cam).filter
+    const style = window.getComputedStyle(elements.cam).filter
     if (style === 'none') {
       return ''
     }
@@ -58,10 +63,10 @@ window.setup = async () => {
   }
 
   const addCamFilter = (filter: string) =>
-    cam.style.filter = getCamFilter() + ' ' + filter
+    elements.cam.style.filter = getCamFilter() + ' ' + filter
 
   const removeCamFilter = (filter: string) =>
-    cam.style.filter = getCamFilter().replace(filter, '')
+    elements.cam.style.filter = getCamFilter().replace(filter, '')
 
   const filter_transparent = 'url("#transparentBlack")'
 
@@ -87,7 +92,7 @@ window.setup = async () => {
         }
       })
 
-      cam.srcObject = stream
+      elements.cam.srcObject = stream
     } catch {
       alert('could not connect stream');
     };
@@ -97,22 +102,22 @@ window.setup = async () => {
     start: !!window.portalOptions?.transparent,
     on: () => {
       addCamFilter(filter_transparent)
-      document.getElementById('outer').style.background = 'linear-gradient(354deg, #00000099, transparent)'
-      document.getElementById('sheen').style.opacity = '0.2'
-      document.getElementById('gradient-bg').style.display = 'none'
+      elements.outer.style.background = 'linear-gradient(354deg, #00000099, transparent)'
+      elements.sheen.style.opacity = '0.2'
+      elements.bgGradient.style.display = 'none'
     },
     off: () => {
       removeCamFilter(filter_transparent)
-      document.getElementById('outer').style.background = ''
-      document.getElementById('sheen').style.opacity = ''
-      document.getElementById('gradient-bg').style.display = 'block'
+      elements.outer.style.background = ''
+      elements.sheen.style.opacity = ''
+      elements.bgGradient.style.display = 'block'
     }
   })
 
   const toggleLarge = toggle({
     start: false,
     off: (state: any) => {
-      document.getElementById('outer').classList.remove('large')
+      elements.outer.classList.remove('large')
 
       if (state) {
         window.resizeTo(state.width, state.height)
@@ -125,7 +130,7 @@ window.setup = async () => {
       }
 
       window.resizeTo(580, 460)
-      document.getElementById('outer').classList.add('large')
+      elements.outer.classList.add('large')
 
       return original
     }
@@ -140,8 +145,8 @@ window.setup = async () => {
 
   const toggleHide = toggle({
     start: false,
-    off: () => cam.style.opacity = '1',
-    on: () => cam.style.opacity = '0'
+    off: () => elements.cam.style.opacity = '1',
+    on: () => elements.cam.style.opacity = '0'
   })
 
   const cycleSaturate = (() => {
@@ -155,7 +160,8 @@ window.setup = async () => {
   })()
 
   const showSelectDevice = () => {
-    const select = document.getElementById('select-device')
+    const select = elements.select
+
     select.style.display = 'block'
 
     select.append(document.createElement('option'))
@@ -182,11 +188,11 @@ window.setup = async () => {
   const zoom = (() => {
     let level = 1
 
-    const start = window.getComputedStyle(cam).transform
+    const start = window.getComputedStyle(elements.cam).transform
 
     const setZoom = (level_: number) => {
       level = level_
-      cam.style.transform = start + ' scale(' + level + ')'
+      elements.cam.style.transform = start + ' scale(' + level + ')'
     }
 
     return {
@@ -220,7 +226,7 @@ window.setup = async () => {
   window.addEventListener('keydown', ev => {
     switch (ev.key) {
       case 'f': // large
-        outer.classList.toggle('flat')
+        elements.outer.classList.toggle('flat')
         break
       case 'l': // large
         toggleLarge()
@@ -233,10 +239,10 @@ window.setup = async () => {
         showSelectDevice()
         break
       case 's': // shape
-        outer.classList.toggle('rectangle')
+        elements.outer.classList.toggle('rectangle')
         break
       case 'r': // rotate border
-        document.getElementById('gradient-bg').classList.toggle('animated')
+        elements.bgGradient.classList.toggle('animated')
         break
       case 't': // transparent
         toggleTransparency()
