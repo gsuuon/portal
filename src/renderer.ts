@@ -114,6 +114,39 @@ window.setup = async () => {
     }
   })
 
+  const resizeLarge = () => {
+    const original = {
+      width: window.innerWidth,
+      height: window.innerHeight
+    }
+
+    if (elements.outer.classList.contains('rectangle')) {
+      window.resizeTo(560, 460)
+    } else {
+      window.resizeTo(560, 560)
+    }
+
+    return original
+  }
+
+  // circle
+  const toggleShape = toggle({
+    start: false,
+    off: (state: any) => {
+      elements.outer.classList.remove('rectangle')
+
+      if (state) {
+        window.resizeTo(state.width, state.height)
+      }
+    },
+    on: () => {
+      elements.outer.classList.add('rectangle')
+      if (elements.outer.classList.contains('large')) {
+        return resizeLarge()
+      }
+    }
+  })
+
   const toggleLarge = toggle({
     start: false,
     off: (state: any) => {
@@ -124,15 +157,9 @@ window.setup = async () => {
       }
     },
     on: () => {
-      const original = {
-        width: window.innerWidth,
-        height: window.innerHeight
-      }
-
-      window.resizeTo(580, 460)
       elements.outer.classList.add('large')
 
-      return original
+      return resizeLarge()
     }
   })
 
@@ -239,7 +266,7 @@ window.setup = async () => {
         showSelectDevice()
         break
       case 's': // shape
-        elements.outer.classList.toggle('rectangle')
+        toggleShape()
         break
       case 'r': // rotate border
         elements.bgGradient.classList.toggle('animated')
