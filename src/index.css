@@ -9,12 +9,11 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
     Arial, sans-serif;
   margin: auto;
-  width: 240px;
-  height: 240px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative; /* for the positioned gradient bg */
 }
 
 svg#filters {
@@ -26,6 +25,7 @@ div#outer {
   --inner-border-radius: var(--border-radius);
   width: 200px;
   height: 200px;
+  margin-top: 20px;
   border-radius: var(--outer-border-radius);
   padding: var(--border-width);
   box-shadow: 2px 4px 14px rgba(0,0,0,0.34);
@@ -35,12 +35,22 @@ div#outer {
 }
 
 div#gradient-bg {
-  background: linear-gradient(-30deg, rgba(255,255,255,0), rgba(255,255,255,1));
+  --size: 100vw;
+
+  background: linear-gradient(
+    -30deg,
+    rgba(255,255,255,0),
+    rgba(255,255,255,1)
+  );
+
   position: absolute;
-  width: 400px;
-  height: 400px;
-  top: -100px;
-  left: -50px;
+
+  width: var(--size);
+  height: var(--size);
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 div#gradient-bg.animated {
@@ -53,6 +63,20 @@ div#outer.rectangle {
   --rect-border-radius: 22px;
   --outer-border-radius: calc(var(--border-width) + var(--rect-border-radius));
   --inner-border-radius: var(--rect-border-radius);
+}
+
+div#outer.large {
+  width: 500px;
+  height: 500px;
+}
+
+div#outer.large.rectangle {
+  width: 500px;
+  height: 400px;
+}
+
+div#outer.flat div#sheen {
+  display: none;
 }
 
 div#inner {
@@ -83,9 +107,9 @@ div#sheen {
 
 @keyframes rotate {
   from {
-    transform: rotate(0);
+    transform: translate(-50%, -50%) rotate(0);
   }
   to {
-    transform: rotate(359deg);
+    transform: translate(-50%, -50%) rotate(359deg);
   }
 }

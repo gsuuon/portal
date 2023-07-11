@@ -17,16 +17,28 @@ const toggle = ({ start, on, off }: {
   off: Function;
 }) => {
   let is_on = start
+  let state : any = null
 
   return () => {
     if (is_on) {
-      off()
+      state = off(state)
     } else {
-      on()
+      state = on(state)
     }
     is_on = !is_on
   }
 }
+
+window.addEventListener('resize', _ => {
+  const bg = document.getElementById('gradient-bg')
+  bg.style.setProperty(
+    '--size',
+    Math.hypot(
+      window.innerWidth,
+      window.innerHeight
+    ) + 'px'
+  )
+})
 
 window.setup = async () => {
   const cam = document.getElementById('camera') as HTMLVideoElement
@@ -87,11 +99,35 @@ window.setup = async () => {
       addCamFilter(filter_transparent)
       document.getElementById('outer').style.background = 'linear-gradient(354deg, #00000099, transparent)'
       document.getElementById('sheen').style.opacity = '0.2'
+      document.getElementById('gradient-bg').style.display = 'none'
     },
     off: () => {
       removeCamFilter(filter_transparent)
       document.getElementById('outer').style.background = ''
       document.getElementById('sheen').style.opacity = ''
+      document.getElementById('gradient-bg').style.display = 'block'
+    }
+  })
+
+  const toggleLarge = toggle({
+    start: false,
+    off: (state: any) => {
+      document.getElementById('outer').classList.remove('large')
+
+      if (state) {
+        window.resizeTo(state.width, state.height)
+      }
+    },
+    on: () => {
+      const original = {
+        width: window.innerWidth,
+        height: window.innerHeight
+      }
+
+      window.resizeTo(580, 460)
+      document.getElementById('outer').classList.add('large')
+
+      return original
     }
   })
 
@@ -119,7 +155,8 @@ window.setup = async () => {
   })()
 
   const showSelectDevice = () => {
-    const select = document.createElement('select')
+    const select = document.getElementById('select-device')
+    select.style.display = 'block'
 
     select.append(document.createElement('option'))
 
@@ -132,14 +169,13 @@ window.setup = async () => {
       }))
     )
 
-    document.body.appendChild(select)
-
     select.onchange = (ev) => {
       const deviceId = (ev.target as HTMLSelectElement).value
 
       if (deviceId === '') { return }
       setDevice(deviceId)
-      select.remove()
+      select.innerHTML = ''
+      select.style.display = 'none'
     }
   }
 
@@ -183,6 +219,12 @@ window.setup = async () => {
 
   window.addEventListener('keydown', ev => {
     switch (ev.key) {
+      case 'f': // large
+        outer.classList.toggle('flat')
+        break
+      case 'l': // large
+        toggleLarge()
+        break
       case 'b': // blur
         toggleBlur()
         break
