@@ -37,7 +37,7 @@ const elements = {
   select: document.getElementById('select-device')
 }
 
-window.addEventListener('resize', _ => {
+const calcAndSetBgGradientSize = () => {
   elements.bgGradient.style.setProperty(
     '--size',
     Math.hypot(
@@ -45,7 +45,10 @@ window.addEventListener('resize', _ => {
       window.innerHeight
     ) + 'px'
   )
-})
+}
+
+window.addEventListener('resize', calcAndSetBgGradientSize)
+calcAndSetBgGradientSize()
 
 window.setup = async () => {
   let stream : MediaStream | undefined;
