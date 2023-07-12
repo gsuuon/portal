@@ -37,18 +37,20 @@ const elements = {
   select: document.getElementById('select-device')
 }
 
-const calcAndSetBgGradientSize = () => {
+const resize = () => {
+  const width = elements.outer.clientWidth
+  const height = elements.outer.clientHeight
+
   elements.bgGradient.style.setProperty(
     '--size',
     Math.hypot(
-      window.innerWidth,
-      window.innerHeight
+      width,
+      height
     ) + 'px'
   )
-}
 
-window.addEventListener('resize', calcAndSetBgGradientSize)
-calcAndSetBgGradientSize()
+  window.resizeTo(width + 40, height + 40)
+}
 
 window.setup = async () => {
   let stream : MediaStream | undefined;
@@ -117,36 +119,17 @@ window.setup = async () => {
     }
   })
 
-  const resizeLarge = () => {
-    const original = {
-      width: window.innerWidth,
-      height: window.innerHeight
-    }
-
-    if (elements.outer.classList.contains('rectangle')) {
-      window.resizeTo(560, 460)
-    } else {
-      window.resizeTo(560, 560)
-    }
-
-    return original
-  }
-
   // circle
   const toggleShape = toggle({
     start: false,
-    off: (state: any) => {
+    off: () => {
       elements.outer.classList.remove('rectangle')
 
-      if (state) {
-        window.resizeTo(state.width, state.height)
-      }
+      resize()
     },
     on: () => {
       elements.outer.classList.add('rectangle')
-      if (elements.outer.classList.contains('large')) {
-        return resizeLarge()
-      }
+      resize()
     }
   })
 
@@ -155,14 +138,12 @@ window.setup = async () => {
     off: (state: any) => {
       elements.outer.classList.remove('large')
 
-      if (state) {
-        window.resizeTo(state.width, state.height)
-      }
+      resize()
     },
     on: () => {
       elements.outer.classList.add('large')
 
-      return resizeLarge()
+      resize()
     }
   })
 
