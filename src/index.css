@@ -28,7 +28,7 @@ div#outer {
   margin-top: 20px;
   border-radius: var(--outer-border-radius);
   padding: var(--border-width);
-  box-shadow: 2px 4px 14px rgba(0,0,0,0.34);
+  box-shadow: 4px 6px 10px rgba(0,0,0,0.18);
   -webkit-app-region: drag;
   overflow: hidden;
   position: relative;
@@ -66,8 +66,8 @@ div#outer.rectangle {
 }
 
 div#outer.large {
-  width: 500px;
-  height: 500px;
+  width: 400px;
+  height: 400px;
 }
 
 div#outer.large.rectangle {
