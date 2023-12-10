@@ -6,8 +6,9 @@
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
-    "package": "electron-forge package",
     "make": "electron-forge make",
+    "install:windows": ".\\out\\make\\squirrel.windows\\x64\\\"portal-1.0.0 Setup.exe\"",
+    "package": "electron-forge package",
     "publish": "electron-forge publish",
     "lint": "eslint --ext .ts,.tsx ."
   },
